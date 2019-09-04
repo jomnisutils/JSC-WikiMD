@@ -1,0 +1,15 @@
+button,
+.pointer {
+    cursor: pointer !important;
+}
+
+.my-input {
+    padding: 0 4px !important;
+    outline: none;
+}
+
+a,
+div {
+    outline: 0px !important;
+    /* https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwj9yaqU9ajkAhVSjqQKHZebBH0QFjAAegQIABAB&url=https%3A%2F%2Fcss-tricks.com%2Fremoving-the-dotted-outline%2F&usg=AOvVaw2gbmY2wp70u_tjI6J_nrCD */
+}
