@@ -33,6 +33,7 @@ export class WikiMDViewer extends WikiMDComponent {
 
             this.renderArea.querySelectorAll("a").forEach(a => {
                 a.target = "_blank"
+                a.classList.add("interal-link")
                 a.addEventListener("click", e => this.callHandler("link-click", e))
             })
         })

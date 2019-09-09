@@ -1,4 +1,5 @@
 import mermaid from "mermaid"
+import { WikiMDActions } from "./WikiMD"
 
 export abstract class WikiMDComponent {
     protected element: HTMLElement // elemento in cui è instanziato il visualizzatore
@@ -54,7 +55,12 @@ export abstract class WikiMDComponent {
         this.handlers = handlers
     }
 
-    protected callHandler(eventName: WikiMDEvent, eventData: Event): boolean {
+    public executeAction(action: WikiMDActions, data: any): boolean {
+        console.warn(`Azione non gestita: ${action}`)
+        return true
+    }
+
+    protected callHandler(eventName: WikiMDEvent, eventData: Event | any): boolean {
         const handler = this.handlers.get(eventName)
         if (handler) {
             return handler(eventData)

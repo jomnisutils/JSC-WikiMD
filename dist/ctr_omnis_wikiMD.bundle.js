@@ -14630,7 +14630,7 @@ exports.push([module.i, "/**\n * easymde v2.7.0\n * Copyright Jeroen Akkerman\n 
 
 exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, ".wikimd {\n    width: 100%;\n    height: 100%;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    padding: 8px;\n}\n", ""]);
+exports.push([module.i, ".wikimd {\n    width: 100%;\n    height: 100%;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    overflow-y: scroll;\n}\n", ""]);
 
 
 /***/ }),
@@ -114766,7 +114766,16 @@ var EVENTS = {
 // ^ L'API di Omnis fa schifo, da una parte serve l'id numerico (canSendEvent), dall'altro il nome stringa...
 var WikiMDEvents = {
     evLinkClick: new JSCEvent_1.JSCEvent(1, "evLinkClick"),
+    evPickLink: new JSCEvent_1.JSCEvent(2, "evPickLink"),
 };
+var WikiMDMethods;
+(function (WikiMDMethods) {
+    WikiMDMethods["$gethtml"] = "$gethtml";
+    WikiMDMethods["$haschanges"] = "$haschanges";
+    WikiMDMethods["$commitchanges"] = "$commitchanges";
+    WikiMDMethods["$discardchanges"] = "$discardchanges";
+    WikiMDMethods["$inserttext"] = "$inserttext";
+})(WikiMDMethods || (WikiMDMethods = {}));
 var WikiMDJSONCOmponent = /** @class */ (function (_super) {
     __extends(WikiMDJSONCOmponent, _super);
     function WikiMDJSONCOmponent(base) {
@@ -114797,6 +114806,7 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
             mermaidClass: ".mermaid",
         });
         this.wikiMD.addEventListener("link-click", function (e) { return _this.handleLinkClick(e); });
+        this.wikiMD.addEventListener("select-link", function () { return _this.handleSelectLink(); });
         this.setProperty(WikiMDProperties.markdown, markdown);
         this.setProperty(WikiMDProperties.editormode, editormode);
     };
@@ -114820,6 +114830,10 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
         else {
             return true;
         }
+    };
+    WikiMDJSONCOmponent.prototype.handleSelectLink = function () {
+        this.sendEvent(WikiMDEvents.evPickLink);
+        return true;
     };
     WikiMDJSONCOmponent.prototype.handleClick = function (pX, pY) {
         console.log("handle click");
@@ -114910,6 +114924,13 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
                     this.wikiMD.discardChanges();
                 }
                 return;
+            case WikiMDMethods.$inserttext:
+                var text = args[0];
+                console.warn("Inserisco il testo " + text);
+                if (this.wikiMD) {
+                    this.wikiMD.replaceSelectionText(text);
+                }
+                return;
         }
     };
     WikiMDJSONCOmponent.prototype.updateCtrl = function (what, row, col) {
@@ -114923,13 +114944,6 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
     return WikiMDJSONCOmponent;
 }(omnis_1.JSONComponent));
 exports.WikiMDJSONCOmponent = WikiMDJSONCOmponent;
-var WikiMDMethods;
-(function (WikiMDMethods) {
-    WikiMDMethods["$gethtml"] = "$gethtml";
-    WikiMDMethods["$haschanges"] = "$haschanges";
-    WikiMDMethods["$commitchanges"] = "$commitchanges";
-    WikiMDMethods["$discardchanges"] = "$discardchanges";
-})(WikiMDMethods || (WikiMDMethods = {}));
 
 
 /***/ }),
@@ -115190,6 +115204,10 @@ var sample_graph = "```mermaid\n graph LR \nA-->B";
 var WikiMDViewer_1 = __webpack_require__(/*! ./WikiMDViewer */ "./src/wikiMD/WikiMDViewer.ts");
 var WikiMDEditor_1 = __webpack_require__(/*! ./WikiMDEditor */ "./src/wikiMD/WikiMDEditor.ts");
 __webpack_require__(/*! ./wikimd.css */ "./src/wikiMD/wikimd.css");
+var WikiMDActions;
+(function (WikiMDActions) {
+    WikiMDActions["replaceText"] = "replaceText";
+})(WikiMDActions = exports.WikiMDActions || (exports.WikiMDActions = {}));
 var WikiMD = /** @class */ (function () {
     function WikiMD(config) {
         this.editorMode = false;
@@ -115261,6 +115279,14 @@ var WikiMD = /** @class */ (function () {
             this.component.setHandlers(this.listeners);
         }
     };
+    WikiMD.prototype.replaceSelectionText = function (text) {
+        if (this.component) {
+            this.component.executeAction(WikiMDActions.replaceText, {
+                text: text,
+                mode: "around",
+            });
+        }
+    };
     return WikiMD;
 }());
 exports.WikiMD = WikiMD;
@@ -115322,6 +115348,10 @@ var WikiMDComponent = /** @class */ (function () {
     WikiMDComponent.prototype.setHandlers = function (handlers) {
         this.handlers = handlers;
     };
+    WikiMDComponent.prototype.executeAction = function (action, data) {
+        console.warn("Azione non gestita: " + action);
+        return true;
+    };
     WikiMDComponent.prototype.callHandler = function (eventName, eventData) {
         var handler = this.handlers.get(eventName);
         if (handler) {
@@ -115368,6 +115398,7 @@ var easymde_1 = __importDefault(__webpack_require__(/*! easymde */ "./node_modul
 var WikiMDComponent_1 = __webpack_require__(/*! ./WikiMDComponent */ "./src/wikiMD/WikiMDComponent.ts");
 var mermaid_1 = __importDefault(__webpack_require__(/*! mermaid */ "./node_modules/mermaid/dist/mermaid.core.js"));
 var renderer_1 = __webpack_require__(/*! ./renderer */ "./src/wikiMD/renderer.ts");
+var WikiMD_1 = __webpack_require__(/*! ./WikiMD */ "./src/wikiMD/WikiMD.ts");
 var WikiMDEditor = /** @class */ (function (_super) {
     __extends(WikiMDEditor, _super);
     function WikiMDEditor(config) {
@@ -115389,6 +115420,23 @@ var WikiMDEditor = /** @class */ (function (_super) {
             element: this.textArea,
             autoDownloadFontAwesome: true,
             spellChecker: false,
+            promptURLs: true,
+            // toolbar: [
+            //     "bold",
+            //     "italic",
+            //     "heading",
+            //     "|",
+            //     "quote",
+            //     {
+            //         name: "custom",
+            //         action: editor => {
+            //             // Add your own code
+            //             this.callHandler("select-link", {})
+            //         },
+            //         className: "fa fa-star",
+            //         title: "Custom Button",
+            //     },
+            // ],
             previewRender: function (plainText, preview) {
                 // Async method
                 // setTimeout(function() {
@@ -115432,6 +115480,26 @@ var WikiMDEditor = /** @class */ (function (_super) {
     WikiMDEditor.prototype.commitChanges = function () {
         this.originalMarkdown = this.getMarkdown();
         this.setMarkdown(this.originalMarkdown);
+    };
+    WikiMDEditor.prototype.executeAction = function (action, data) {
+        switch (action) {
+            case WikiMD_1.WikiMDActions.replaceText:
+                this.replaceSelection(data.text, data.mode);
+                return true;
+            default:
+                return _super.prototype.executeAction.call(this, action, data);
+        }
+    };
+    /**
+     * sostituisce la selezione corrente con il testo passato come parametro
+     * @param text testo da inserire
+     * @param mode modalità d'inserimento
+     */
+    WikiMDEditor.prototype.replaceSelection = function (text, mode) {
+        if (mode === void 0) { mode = "end"; }
+        if (this.editor) {
+            this.editor.codemirror.doc.replaceSelection(text, mode);
+        }
     };
     return WikiMDEditor;
 }(WikiMDComponent_1.WikiMDComponent));
@@ -115493,6 +115561,7 @@ var WikiMDViewer = /** @class */ (function (_super) {
             mermaid_1.default.init(_this.mermaidClass);
             _this.renderArea.querySelectorAll("a").forEach(function (a) {
                 a.target = "_blank";
+                a.classList.add("interal-link");
                 a.addEventListener("click", function (e) { return _this.callHandler("link-click", e); });
             });
         });

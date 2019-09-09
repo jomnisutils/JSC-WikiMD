@@ -27,6 +27,15 @@ var EVENTS = {
 
 const WikiMDEvents = {
     evLinkClick: new JSCEvent(1, "evLinkClick"),
+    evPickLink: new JSCEvent(2, "evPickLink"),
+}
+
+enum WikiMDMethods {
+    $gethtml = "$gethtml",
+    $haschanges = "$haschanges",
+    $commitchanges = "$commitchanges",
+    $discardchanges = "$discardchanges",
+    $inserttext = "$inserttext",
 }
 
 export class WikiMDJSONCOmponent extends JSONComponent {
@@ -62,6 +71,7 @@ export class WikiMDJSONCOmponent extends JSONComponent {
         })
 
         this.wikiMD.addEventListener("link-click", e => this.handleLinkClick(e))
+        this.wikiMD.addEventListener("select-link", () => this.handleSelectLink())
         this.setProperty(WikiMDProperties.markdown, markdown)
         this.setProperty(WikiMDProperties.editormode, editormode)
     }
@@ -86,6 +96,11 @@ export class WikiMDJSONCOmponent extends JSONComponent {
         } else {
             return true
         }
+    }
+
+    public handleSelectLink() {
+        this.sendEvent(WikiMDEvents.evPickLink)
+        return true
     }
 
     public handleClick(pX: number, pY: number) {
@@ -184,7 +199,13 @@ export class WikiMDJSONCOmponent extends JSONComponent {
                 if (this.wikiMD) {
                     this.wikiMD.discardChanges()
                 }
-
+                return
+            case WikiMDMethods.$inserttext:
+                let text: string = args[0]
+                console.warn(`Inserisco il testo ${text}`)
+                if (this.wikiMD) {
+                    this.wikiMD.replaceSelectionText(text)
+                }
                 return
         }
     }
@@ -198,11 +219,4 @@ export class WikiMDJSONCOmponent extends JSONComponent {
         const elem = this.base.getClientElem()
         elem.style.lineHeight = elem.style.height
     }
-}
-
-enum WikiMDMethods {
-    $gethtml = "$gethtml",
-    $haschanges = "$haschanges",
-    $commitchanges = "$commitchanges",
-    $discardchanges = "$discardchanges",
 }

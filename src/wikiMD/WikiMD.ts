@@ -9,6 +9,10 @@ import { WikiMDComponent } from "./WikiMDComponent"
 
 import "./wikimd.css"
 
+export enum WikiMDActions {
+    replaceText = "replaceText",
+}
+
 export class WikiMD {
     private editorMode: boolean = false
     private element: HTMLElement
@@ -89,6 +93,15 @@ export class WikiMD {
         this.listeners.set(event, fn)
         if (this.component) {
             this.component.setHandlers(this.listeners)
+        }
+    }
+
+    public replaceSelectionText(text: string) {
+        if (this.component) {
+            this.component.executeAction(WikiMDActions.replaceText, {
+                text: text,
+                mode: "around",
+            })
         }
     }
 }

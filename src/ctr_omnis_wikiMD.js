@@ -5,6 +5,8 @@ ctrl_net_omnis_wikiMD.prototype = (function() {
         this.superclass = ctrl_base.prototype
         this.superclass.init_class_inst.call(this)
         this.component = new ctr_omnis_wikiMD.WikiMDJSONCOmponent(this)
+
+        window.JSCComp = this.component
     }
 
     ctrl.delete_class_inst = function() {
@@ -98,6 +100,10 @@ ctrl_net_omnis_wikiMD.prototype = (function() {
      */
     ctrl.$discardchanges = function(Param1, Param2) {
         return this.component.executeMethod("$discardchanges", Array.from(arguments))
+    }
+
+    ctrl.$inserttext = function(text) {
+        return this.component.executeMethod("$inserttext", Array.from(arguments))
     }
 
     return ctrl

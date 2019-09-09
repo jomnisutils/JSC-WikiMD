@@ -3,6 +3,7 @@ import { WikiMDComponent } from "./WikiMDComponent"
 import mermaid from "mermaid"
 
 import { renderMarkdown } from "./renderer"
+import { WikiMDActions } from "./WikiMD"
 
 export class WikiMDEditor extends WikiMDComponent {
     private textArea: HTMLTextAreaElement
@@ -31,7 +32,23 @@ export class WikiMDEditor extends WikiMDComponent {
             element: this.textArea,
             autoDownloadFontAwesome: true,
             spellChecker: false,
-
+            promptURLs: true,
+            // toolbar: [
+            //     "bold",
+            //     "italic",
+            //     "heading",
+            //     "|",
+            //     "quote",
+            //     {
+            //         name: "custom",
+            //         action: editor => {
+            //             // Add your own code
+            //             this.callHandler("select-link", {})
+            //         },
+            //         className: "fa fa-star",
+            //         title: "Custom Button",
+            //     },
+            // ],
             previewRender: function(plainText, preview) {
                 // Async method
                 // setTimeout(function() {
@@ -80,5 +97,26 @@ export class WikiMDEditor extends WikiMDComponent {
     public commitChanges() {
         this.originalMarkdown = this.getMarkdown()
         this.setMarkdown(this.originalMarkdown)
+    }
+
+    public executeAction(action: WikiMDActions, data: any): boolean {
+        switch (action) {
+            case WikiMDActions.replaceText:
+                this.replaceSelection(data.text, data.mode)
+                return true
+            default:
+                return super.executeAction(action, data)
+        }
+    }
+
+    /**
+     * sostituisce la selezione corrente con il testo passato come parametro
+     * @param text testo da inserire
+     * @param mode modalità d'inserimento
+     */
+    private replaceSelection(text: string, mode: "around" | "start" | "end" = "end") {
+        if (this.editor) {
+            this.editor.codemirror.doc.replaceSelection(text, mode)
+        }
     }
 }

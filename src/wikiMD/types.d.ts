@@ -5,5 +5,5 @@ declare type WikiMDConfig = {
     mermaidClass: string
 }
 
-declare type WikiMDEvent = "link-click" | "image-click"
-declare type WikiMDEventHandler = (e: Event) => boolean
+declare type WikiMDEvent = "link-click" | "image-click" | "select-link"
+declare type WikiMDEventHandler = (e?: Event | any) => boolean
