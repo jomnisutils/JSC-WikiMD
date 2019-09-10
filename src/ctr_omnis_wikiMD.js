@@ -27,11 +27,6 @@ ctrl_net_omnis_wikiMD.prototype = (function() {
         this.component.addClickHandlers(elem)
     }
 
-    ctrl.addClickHandlers = function(elem) {
-        console.log("addClickHandlers")
-        this.component.addClickHandlers(elem)
-    }
-
     ctrl.sizeChanged = function() {
         this.superclass.sizeChanged()
         this.component.sizeChanged()
