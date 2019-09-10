@@ -14630,7 +14630,7 @@ exports.push([module.i, "/**\n * easymde v2.7.0\n * Copyright Jeroen Akkerman\n 
 
 exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, ".wikimd {\n    width: 100%;\n    height: 100%;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    overflow-y: scroll;\n}\n", ""]);
+exports.push([module.i, ".wikimd {\n    display: flex;\n    flex-direction: column;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n\n.CodeMirror {\n    /* height: 100%;\n    max-height: 80%; */\n    flex: 1;\n}\n\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    overflow-y: scroll;\n}\n", ""]);
 
 
 /***/ }),
