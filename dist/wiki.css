@@ -7,6 +7,10 @@ button,
 .my-input {
     padding: 0 4px !important;
     outline: none;
+    /* 
+    Omnis fa porcherie e il padding mi rovina un po' i conti, questo rimette tutto di default
+    https://www.w3schools.com/css/css3_box-sizing.asp  */
+    box-sizing: border-box;
 }
 
 a,
