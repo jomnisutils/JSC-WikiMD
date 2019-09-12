@@ -120,6 +120,11 @@ export abstract class JSONComponent {
         return true
     }
 
+    public bounceToOmnis(event: JSCEvent) {
+        this.sendEvent(event)
+        return true
+    }
+
     /**
      * Notifica Omnis dell'evento, passando i parametri specificati
      * http://sdkdocs.omnis.net/jssdk/latest/api-reference/javascript-control-reference/javascript-api/control/instance-methods/sendevent

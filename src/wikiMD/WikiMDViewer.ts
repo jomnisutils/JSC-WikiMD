@@ -3,6 +3,7 @@ import mermaid from "mermaid"
 import { renderMarkdown } from "./renderer"
 import { WikiMDComponent } from "./WikiMDComponent"
 import { toggleSideBySide } from "easymde"
+import { isAnchor } from "../utils"
 
 export class WikiMDViewer extends WikiMDComponent {
     private renderArea: HTMLElement // elemento nel quale settare il codice HTML
@@ -33,7 +34,9 @@ export class WikiMDViewer extends WikiMDComponent {
 
             this.renderArea.querySelectorAll("a").forEach(a => {
                 a.target = "_blank"
-                a.classList.add("interal-link")
+                if (!isAnchor(a.href)) {
+                    a.classList.add("external-link")
+                }
                 a.addEventListener("click", e => this.callHandler("link-click", e))
             })
         })

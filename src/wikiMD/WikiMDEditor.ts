@@ -5,6 +5,8 @@ import mermaid from "mermaid"
 import { renderMarkdown } from "./renderer"
 import { WikiMDActions } from "./WikiMD"
 
+import "../../node_modules/easymde/dist/easymde.min.css"
+
 export class WikiMDEditor extends WikiMDComponent {
     private textArea: HTMLTextAreaElement
     private editor?: EasyMDE
@@ -33,6 +35,7 @@ export class WikiMDEditor extends WikiMDComponent {
             autoDownloadFontAwesome: true,
             spellChecker: false,
             promptURLs: true,
+            toolbar: this.makeToolbar(),
             // toolbar: [
             //     "bold",
             //     "italic",
@@ -118,5 +121,46 @@ export class WikiMDEditor extends WikiMDComponent {
         if (this.editor) {
             this.editor.codemirror.doc.replaceSelection(text, mode)
         }
+    }
+
+    private makeToolbar() {
+        return [
+            "bold",
+            "italic",
+            "strikethrough",
+            "heading",
+            "|",
+            "code",
+            "quote",
+            "unordered-list",
+            "ordered-list",
+            "|",
+            {
+                name: "link",
+                action: (editor: EasyMDE) => {
+                    // Add your own code
+                    this.callHandler("select-link", {})
+                },
+                className: "fa fa-link",
+                title: "Link",
+            },
+            {
+                name: "image",
+                action: (editor: EasyMDE) => {
+                    // Add your own code
+                    this.callHandler("select-image", {})
+                },
+                className: "fa fa-image",
+                title: "Image",
+            },
+            "table",
+            "horizontal-rule",
+            "|",
+            "preview",
+            "side-by-side",
+            "fullscreen",
+            "|",
+            "guide",
+        ]
     }
 }

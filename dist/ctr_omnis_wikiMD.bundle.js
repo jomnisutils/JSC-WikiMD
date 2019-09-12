@@ -14630,7 +14630,7 @@ exports.push([module.i, "/**\n * easymde v2.7.0\n * Copyright Jeroen Akkerman\n 
 
 exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, ".wikimd {\n    display: flex;\n    flex-direction: column;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n\n.CodeMirror {\n    /* height: 100%;\n    max-height: 80%; */\n    flex: 1;\n}\n\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    overflow-y: scroll;\n}\n", ""]);
+exports.push([module.i, ".wikimd {\n    display: flex;\n    flex-direction: column;\n    font-family: \"Roboto\", sans-serif;\n    line-height: normal;\n}\n\n.CodeMirror {\n    /* height: 100%;\n    max-height: 80%; */\n    flex: 1;\n}\n\n.wikimd-viewer {\n    width: 100%;\n    height: 100%;\n    line-height: normal;\n    overflow-y: scroll;\n}\n\n.editor-toolbar button {\n    font-size: 1rem;\n}\n", ""]);
 
 
 /***/ }),
@@ -114767,6 +114767,7 @@ var EVENTS = {
 var WikiMDEvents = {
     evLinkClick: new JSCEvent_1.JSCEvent(1, "evLinkClick"),
     evPickLink: new JSCEvent_1.JSCEvent(2, "evPickLink"),
+    evPickImage: new JSCEvent_1.JSCEvent(3, "evPickImage"),
 };
 var WikiMDMethods;
 (function (WikiMDMethods) {
@@ -114806,7 +114807,8 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
             mermaidClass: ".mermaid",
         });
         this.wikiMD.addEventListener("link-click", function (e) { return _this.handleLinkClick(e); });
-        this.wikiMD.addEventListener("select-link", function () { return _this.handleSelectLink(); });
+        this.wikiMD.addEventListener("select-link", function () { return _this.bounceToOmnis(WikiMDEvents.evPickLink); });
+        this.wikiMD.addEventListener("select-image", function () { return _this.bounceToOmnis(WikiMDEvents.evPickImage); });
         this.setProperty(WikiMDProperties.markdown, markdown);
         this.setProperty(WikiMDProperties.editormode, editormode);
     };
@@ -114830,10 +114832,6 @@ var WikiMDJSONCOmponent = /** @class */ (function (_super) {
         else {
             return true;
         }
-    };
-    WikiMDJSONCOmponent.prototype.handleSelectLink = function () {
-        this.sendEvent(WikiMDEvents.evPickLink);
-        return true;
     };
     WikiMDJSONCOmponent.prototype.handleClick = function (pX, pY) {
         console.log("handle click");
@@ -115119,6 +115117,10 @@ var JSONComponent = /** @class */ (function () {
     JSONComponent.prototype.handleClick = function (x, y) {
         return true;
     };
+    JSONComponent.prototype.bounceToOmnis = function (event) {
+        this.sendEvent(event);
+        return true;
+    };
     /**
      * Notifica Omnis dell'evento, passando i parametri specificati
      * http://sdkdocs.omnis.net/jssdk/latest/api-reference/javascript-control-reference/javascript-api/control/instance-methods/sendevent
@@ -115181,6 +115183,42 @@ exports.JSONComponent = JSONComponent;
 Object.defineProperty(exports, "__esModule", { value: true });
 var JSONComponent_1 = __webpack_require__(/*! ./JSONComponent */ "./src/omnis/JSONComponent.ts");
 exports.JSONComponent = JSONComponent_1.JSONComponent;
+
+
+/***/ }),
+
+/***/ "./src/utils/index.ts":
+/*!****************************!*\
+  !*** ./src/utils/index.ts ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./links */ "./src/utils/links.ts"));
+
+
+/***/ }),
+
+/***/ "./src/utils/links.ts":
+/*!****************************!*\
+  !*** ./src/utils/links.ts ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function isAnchor(href) {
+    return href.startsWith(location.href + "#");
+}
+exports.isAnchor = isAnchor;
 
 
 /***/ }),
@@ -115399,6 +115437,7 @@ var WikiMDComponent_1 = __webpack_require__(/*! ./WikiMDComponent */ "./src/wiki
 var mermaid_1 = __importDefault(__webpack_require__(/*! mermaid */ "./node_modules/mermaid/dist/mermaid.core.js"));
 var renderer_1 = __webpack_require__(/*! ./renderer */ "./src/wikiMD/renderer.ts");
 var WikiMD_1 = __webpack_require__(/*! ./WikiMD */ "./src/wikiMD/WikiMD.ts");
+__webpack_require__(/*! ../../node_modules/easymde/dist/easymde.min.css */ "./node_modules/easymde/dist/easymde.min.css");
 var WikiMDEditor = /** @class */ (function (_super) {
     __extends(WikiMDEditor, _super);
     function WikiMDEditor(config) {
@@ -115421,6 +115460,7 @@ var WikiMDEditor = /** @class */ (function (_super) {
             autoDownloadFontAwesome: true,
             spellChecker: false,
             promptURLs: true,
+            toolbar: this.makeToolbar(),
             // toolbar: [
             //     "bold",
             //     "italic",
@@ -115501,6 +115541,47 @@ var WikiMDEditor = /** @class */ (function (_super) {
             this.editor.codemirror.doc.replaceSelection(text, mode);
         }
     };
+    WikiMDEditor.prototype.makeToolbar = function () {
+        var _this = this;
+        return [
+            "bold",
+            "italic",
+            "strikethrough",
+            "heading",
+            "|",
+            "code",
+            "quote",
+            "unordered-list",
+            "ordered-list",
+            "|",
+            {
+                name: "link",
+                action: function (editor) {
+                    // Add your own code
+                    _this.callHandler("select-link", {});
+                },
+                className: "fa fa-link",
+                title: "Link",
+            },
+            {
+                name: "image",
+                action: function (editor) {
+                    // Add your own code
+                    _this.callHandler("select-image", {});
+                },
+                className: "fa fa-image",
+                title: "Image",
+            },
+            "table",
+            "horizontal-rule",
+            "|",
+            "preview",
+            "side-by-side",
+            "fullscreen",
+            "|",
+            "guide",
+        ];
+    };
     return WikiMDEditor;
 }(WikiMDComponent_1.WikiMDComponent));
 exports.WikiMDEditor = WikiMDEditor;
@@ -115537,6 +115618,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var mermaid_1 = __importDefault(__webpack_require__(/*! mermaid */ "./node_modules/mermaid/dist/mermaid.core.js"));
 var renderer_1 = __webpack_require__(/*! ./renderer */ "./src/wikiMD/renderer.ts");
 var WikiMDComponent_1 = __webpack_require__(/*! ./WikiMDComponent */ "./src/wikiMD/WikiMDComponent.ts");
+var utils_1 = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
 var WikiMDViewer = /** @class */ (function (_super) {
     __extends(WikiMDViewer, _super);
     function WikiMDViewer(config) {
@@ -115561,7 +115643,9 @@ var WikiMDViewer = /** @class */ (function (_super) {
             mermaid_1.default.init(_this.mermaidClass);
             _this.renderArea.querySelectorAll("a").forEach(function (a) {
                 a.target = "_blank";
-                a.classList.add("interal-link");
+                if (!utils_1.isAnchor(a.href)) {
+                    a.classList.add("external-link");
+                }
                 a.addEventListener("click", function (e) { return _this.callHandler("link-click", e); });
             });
         });

@@ -28,6 +28,7 @@ var EVENTS = {
 const WikiMDEvents = {
     evLinkClick: new JSCEvent(1, "evLinkClick"),
     evPickLink: new JSCEvent(2, "evPickLink"),
+    evPickImage: new JSCEvent(3, "evPickImage"),
 }
 
 enum WikiMDMethods {
@@ -71,7 +72,8 @@ export class WikiMDJSONCOmponent extends JSONComponent {
         })
 
         this.wikiMD.addEventListener("link-click", e => this.handleLinkClick(e))
-        this.wikiMD.addEventListener("select-link", () => this.handleSelectLink())
+        this.wikiMD.addEventListener("select-link", () => this.bounceToOmnis(WikiMDEvents.evPickLink))
+        this.wikiMD.addEventListener("select-image", () => this.bounceToOmnis(WikiMDEvents.evPickImage))
         this.setProperty(WikiMDProperties.markdown, markdown)
         this.setProperty(WikiMDProperties.editormode, editormode)
     }
@@ -96,11 +98,6 @@ export class WikiMDJSONCOmponent extends JSONComponent {
         } else {
             return true
         }
-    }
-
-    public handleSelectLink() {
-        this.sendEvent(WikiMDEvents.evPickLink)
-        return true
     }
 
     public handleClick(pX: number, pY: number) {

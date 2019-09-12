@@ -17,3 +17,7 @@
     line-height: normal;
     overflow-y: scroll;
 }
+
+.editor-toolbar button {
+    font-size: 1rem;
+}

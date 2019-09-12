@@ -9,7 +9,8 @@
         "build": "webpack --mode=production",
         "watch": "webpack --watch --mode=development",
         "serve": "http-server -p 9001",
-        "pretty": "npx prettier src/**/*.ts --write"
+        "pretty": "npx prettier src/**/*.ts --write",
+        "start": "npm run watch & npm run serve"
     },
     "keywords": [],
     "author": "",
