@@ -4,6 +4,10 @@ button,
     cursor: pointer !important;
 }
 
+.ridge {
+    border-style: ridge !important;
+}
+
 .my-input {
     padding: 0 4px !important;
     outline: none;
