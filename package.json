@@ -34,7 +34,7 @@
     },
     "dependencies": {
         "easymde": "^2.7.0",
-        "mermaid": "^8.2.3",
+        "mermaid": "^8.11.0",
         "rehype-raw": "^4.0.1",
         "rehype-stringify": "^6.0.0",
         "remark-mermaid": "^0.2.0",
